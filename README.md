@@ -1,5 +1,6 @@
-# 2024RT-Thread 全球嵌入式电子设计竞赛 作品-基于瑞萨RA8D1的轮式机器人
-#一、 项目简介
+# 2024RT-Thread 全球嵌入式电子设计竞赛 作品-基于瑞萨RA8D1的轮式机器人  
+瑞萨RA8D1 vision board 这块开发板这这里我不做过多介绍,详见```https://www.rt-thread.org/document/site/#/rt-thread-version/rt-thread-standard/hw-board/ra8d1-vision-board/ra8d1-vision-board ```
+# 一、 项目简介
 本项目旨在开发一个基于Vision Board和Maix Cam的智能送药小车。小车通过视觉识别来确定目标位置，并自主导航到指定地点进行药物配送。小车的核心处理单元是Texas Instruments的MSPM0G3507微控制器。
 
 ## 功能描述
