@@ -264,4 +264,4 @@ while True:
     time.sleep_ms(100)
 ```
 ### 小车整体框架 
-![img]()
+![img](https://github.com/lqr0323/-2024---RA8D1-/blob/main/IMG_20240914_101939.jpg)
