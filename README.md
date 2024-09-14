@@ -68,6 +68,8 @@
 
   #二、项目详解
   vision board 在openmvide中编写代码截图
+
   ！[img](https://github.com/lqr0323/-2024---RA8D1-/blob/main/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202024-09-14%20094335.png)
-  vision board 端代码
+
+   vision board 端代码
   
