@@ -264,4 +264,9 @@ while True:
     time.sleep_ms(100)
 ```
 ### 小车整体框架 
-![img](https://github.com/lqr0323/-2024---RA8D1-/blob/main/IMG_20240914_101939.jpg)
+![img](https://github.com/lqr0323/-2024---RA8D1-/blob/main/IMG_20240914_101939.jpg)  
+## 三、MAIX CAM 训练    
+```
+https://wiki.sipeed.com/soft/maixpy/zh/course/ai/train/maixhub.html
+```
+### 在这个网站进行模型训练，过程都有很详细的介绍，而且有很多开源的模型可以下载，省去了训练的时间，大大节省了自己开发的周期
