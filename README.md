@@ -263,8 +263,7 @@ while True:
     # 控制循环速度
     time.sleep_ms(100)
 ```
-### 小车整体框架 
-![img](https://github.com/lqr0323/-2024---RA8D1-/blob/main/IMG_20240914_101939.jpg)  
+
 ## 三、MAIX CAM 训练    
 ```
 https://wiki.sipeed.com/soft/maixpy/zh/course/ai/train/maixhub.html
