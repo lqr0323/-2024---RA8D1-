@@ -73,4 +73,102 @@
   ![img](https://github.com/lqr0323/-2024---RA8D1-/blob/main/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202024-09-14%20094335.png)
 
    vision board 端代码
-  
+  # 智能送药小车摄像头视觉处理代码解析
+
+## 概述
+该代码实现了通过摄像头检测图像中的红色区域，并通过UART与主控通信，输出相关的坐标和指令。具体的功能包括：
+1. 识别图像中红色区域的中心坐标。
+2. 根据红色区域的位置和大小，发送不同的指令（`t`、`c`、`s`等）给主控板。
+3. 通过定时器定期发送最新的红色区域中心位置。
+
+## 主要模块解析
+
+### 1. 传感器初始化
+```
+sensor.reset()
+sensor.set_pixformat(sensor.RGB565)
+sensor.set_framesize(sensor.QVGA)
+sensor.skip_frames(time=2000)
+```
+通过 ```sensor.reset()``` 初始化摄像头模块。
+使用 ```sensor.set_pixformat(sensor.RGB565)``` 设置摄像头为RGB模式。
+使用 ```sensor.set_framesize(sensor.QVGA)``` 设置图像分辨率为 320x240。
+使用 ```sensor.skip_frames(time=2000)``` 跳过前两秒的帧，确保摄像头稳定工作。  
+UART 通信初始化
+```uart = UART(1, 115200, timeout_char=1000)```
+初始化UART接口，波特率为115200，超时为1000毫秒。用于小车与主控之间的数据传输。
+3. 红色阈值
+```red_threshold = (10, 150, 15, 127, 15, 127)```
+定义红色物体的HSV阈值范围，用于在图像中识别红色区域。需要根据具体环境调整。
+4. 标志变量
+```
+center_sent = False
+last_x_center = 0
+t_sent = False
+```
+center_sent: 标志位，表示是否已经发送了中心坐标或其它信号。
+last_x_center: 记录上次发送的红色区域的X轴中心坐标。
+t_sent: 标志位，表示是否已经发送过't'信号。
+5. 定时器中断
+```
+def send_uart(timer):
+    global last_x_center
+    if last_x_center != 0:
+        uart.write('X' + str(last_x_center) + '!@\n')
+```
+定义定时器中断回调函数 send_uart(timer)。每当定时器触发时，检查是否有新的中心坐标并通过UART发送。
+使用 Timer(4, freq=2) 设置定时器，每0.5秒触发一次，调用回调函数。
+6. 主循环
+```
+while True:
+    clock.tick()
+    img = sensor.snapshot()
+    roi = (0, 100, 320, 48)
+    img.draw_rectangle(roi, color=(0, 255, 0))
+```
+在主循环中，摄像头每帧捕获一张图像，并定义感兴趣区域(ROI)为 (0, 100, 320, 48)，即图像中间的一部分。
+通过 img.draw_rectangle(roi, color=(0, 255, 0)) 在该区域画一个绿色的矩形框，用于后续红色检测的范围。
+7. 识别红色区域
+```
+blobs = img.find_blobs([red_threshold], roi=roi, pixels_threshold=200, area_threshold=200)
+```
+使用 img.find_blobs 函数在指定ROI中寻找符合红色阈值的区域。区域的像素和面积阈值分别设置为200，保证只识别较大的红色区域。
+8. 处理检测到的红色区域  
+```
+largest_blob = max(blobs, key=lambda b: b.pixels())
+x, y, w, h = largest_blob.rect()
+```
+条件处理：
+区域宽度在10到90之间时：
+
+发送红色区域的中心坐标：
+```
+uart.write('X' + str(last_x_center) + '!@\n')
+```
+如果中心坐标在 [130, 190] 范围内且没有发送过t信号，则连续发送四次't'：
+```
+uart.write("t\n")
+t_sent = True
+```
+区域宽度大于150时：
+
+表示即将到达十字路口，发送 c：
+```
+uart.write("c\n")
+```
+区域宽度小于等于10时：
+
+如果没有有效的红色区域，则发送 s 信号，表示停止：
+```
+uart.write("s\n")
+```
+9. 没有找到红色区域
+如果没有检测到任何红色区域，则发送停止信号 s：
+```
+uart.write("s\n")
+```
+10. 循环控制
+```
+time.sleep_ms(100)
+```
+每次循环结束后，程序暂停100毫秒，以控制帧率。
